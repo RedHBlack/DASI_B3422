@@ -15,7 +15,7 @@ Il sera nécessaire de créer un token pour la connexion :
 **IMPORTANT** :
 - Le main est protégé, il faut créer une branche :
   ```
-  git checkout -b dev/billy
+  git checkout -b dev/redhblack
   ```
   
 - Pour fusionner une branche avec une autre :
