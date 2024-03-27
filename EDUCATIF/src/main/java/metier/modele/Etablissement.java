@@ -55,7 +55,10 @@ public class Etablissement {
     protected double ips;
     
     @Column(nullable=false)
-    protected LatLng gps;
+    protected double longitude;
+    
+    @Column(nullable=false)
+    protected double latitude;
     
     @OneToMany(mappedBy="etablissement", cascade = CascadeType.ALL)
     protected List<Eleve> eleves;
@@ -63,7 +66,7 @@ public class Etablissement {
     public Etablissement() {
     }
 
-    public Etablissement(String code, String nom, String secteur, int codePostal, String nomCommune, int codeDepartement, String departement, String academie, double ips, List<Eleve> eleves) {
+    public Etablissement(String code, String nom, String secteur, int codePostal, String nomCommune, int codeDepartement, String departement, String academie, double ips) {
         this.code = code;
         this.nom = nom;
         this.secteur = secteur;
@@ -73,8 +76,8 @@ public class Etablissement {
         this.departement = departement;
         this.academie = academie;
         this.ips = ips;
-        this.eleves = eleves;
-        this.gps=GeoNetApi.getLatLng(nomCommune);
+        this.longitude = GeoNetApi.getLatLng(nomCommune).lng;
+        this.latitude = GeoNetApi.getLatLng(nomCommune).lat;
     }
 
     public Long getId() {
@@ -117,9 +120,23 @@ public class Etablissement {
         return ips;
     }
 
-    public LatLng getGps() {
-        return gps;
+    public double getLongitude() {
+        return longitude;
     }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    
 
     public List<Eleve> getEleves() {
         return eleves;
@@ -159,10 +176,6 @@ public class Etablissement {
 
     public void setIps(double ips) {
         this.ips = ips;
-    }
-
-    public void setGps(LatLng gps) {
-        this.gps = gps;
     }
 
     public void setEleves(List<Eleve> eleves) {

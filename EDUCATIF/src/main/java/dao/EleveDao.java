@@ -45,7 +45,7 @@ public class EleveDao{
     
     public static List<Eleve> obtenirElevesParEtablissement(Etablissement e){
         String jpql = "select e from Eleve e where e.etablissement = :unEtablissement order by e.nom";
-        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Etablissement.class);
+        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Eleve.class);
         query.setParameter("unEtablissement", e);
         
         return query.getResultList();
@@ -53,9 +53,11 @@ public class EleveDao{
     
     public static List<Eleve> obtenirEleves(){
         String jpql = "select e from Eleves e order by e.nom";
-        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Etablissement.class);
+        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Eleve.class);
         
         return query.getResultList();
     }
+    
+    
     
 }

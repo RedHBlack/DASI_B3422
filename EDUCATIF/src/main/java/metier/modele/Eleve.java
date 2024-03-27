@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import util.EducNetApi;
 
 /**
  *
@@ -37,6 +38,7 @@ public class Eleve extends Personne{
     protected List<Demande> demandes;
 
     public Eleve() {
+        this.demandes = new ArrayList<Demande>();
     }
 
     public Eleve(Date dateNaissance, int classe, String nom, String prenom, String motDePasse, String email) {
@@ -44,6 +46,7 @@ public class Eleve extends Personne{
         this.dateNaissance = dateNaissance;
         this.classe = classe;
         this.demandes = new ArrayList<Demande>();
+        
     }
 
     public Date getDateNaissance() {
@@ -83,4 +86,6 @@ public class Eleve extends Personne{
         if(d.getEleve()!=this)
             d.setEleve(this);
     }
+    
+    
 }

@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -33,8 +34,7 @@ public class Demande {
    @Temporal(TemporalType.DATE)
    protected Date date;
    
-   @Temporal(TemporalType.TIMESTAMP)
-   protected Date duree;
+   protected int duree;
    
    @Column(nullable=false)
    protected String description;
@@ -54,13 +54,14 @@ public class Demande {
     public Demande() {
     }
 
-    public Demande(Date date, Date duree, String description, String autoevaluation, String bilan, Etat statut) {
+    public Demande(Eleve e, Date date, int duree, String description, String autoevaluation, String bilan, Etat statut) {
         this.date = date;
         this.duree = duree;
         this.description = description;
         this.autoevaluation = autoevaluation;
         this.bilan = bilan;
         this.statut = statut;
+        this.eleve = e;
     }
 
     public Long getId() {
@@ -71,7 +72,7 @@ public class Demande {
         return date;
     }
 
-    public Date getDuree() {
+    public int getDuree() {
         return duree;
     }
 
@@ -104,7 +105,7 @@ public class Demande {
         this.date = date;
     }
 
-    public void setDuree(Date duree) {
+    public void setDuree(int duree) {
         this.duree = duree;
     }
 
@@ -131,6 +132,10 @@ public class Demande {
     public void setEleve(Eleve eleve) {
         this.eleve = eleve;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "Demande{" + "id=" + id + ", Eleve=" + eleve + ", intervenant=" + intervenant + ", bilan=" + bilan + ", autoevaluation=" + autoevaluation + ", statut=" + statut + "desciption=" + description + ", duree=" + duree + ", date=" + date + '}';
+
+        } 
 }
