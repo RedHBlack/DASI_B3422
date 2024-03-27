@@ -5,22 +5,13 @@
  */
 package vue;
 
-import dao.EleveDao;
-import dao.EtablissementDao;
 import dao.JpaUtil;
-import dao.PersonneDao;
-import static java.lang.System.console;
-import static java.rmi.server.LogStream.log;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import metier.modele.Demande;
 import static metier.modele.Demande.Etat.*;
 import metier.modele.Eleve;
-import metier.modele.Etablissement;
-import metier.modele.Personne;
-import metier.service.ServiceAccueilEleve;
-import metier.service.ServiceInscription;
+import metier.service.ServiceInstructif;
 /**
  *
  * @author bvilleroy
@@ -31,7 +22,7 @@ public class Main{
      */
     public static void main(String[] args){
         // TODO code application logic here
-        ServiceAccueilEleve service = new ServiceAccueilEleve();
+        ServiceInstructif service = new ServiceInstructif();
         JpaUtil.creerFabriquePersistance();
         
         //Etablissement etab = new Etablissement("0691664J","COLLEGE JEAN JAURES","public",69266,"VILLEURBANNE",69,"RHONE","LYON",84.5,new ArrayList<Eleve>());
@@ -55,8 +46,9 @@ public class Main{
             
             //System.out.println(eleve.getId());
             
-            System.out.println("Liste des Demandes");
             List<Demande> l = service.consulterListeDemandesEleve(eleve);
+            
+            System.out.println("Liste des Demandes");
             for (int i=0; i<2 ; i++){
                System.out.println(l.get(i)); 
             }

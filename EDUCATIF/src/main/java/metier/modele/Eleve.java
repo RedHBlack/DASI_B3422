@@ -8,14 +8,12 @@ package metier.modele;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import util.EducNetApi;
 
 /**
  *
@@ -34,7 +32,7 @@ public class Eleve extends Personne{
     @ManyToOne
     protected Etablissement etablissement;
     
-    @OneToMany(mappedBy="eleve",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="eleve")
     protected List<Demande> demandes;
 
     public Eleve() {

@@ -9,6 +9,7 @@ import dao.DemandeDao;
 import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.JpaUtil;
+
 import java.util.List;
 import metier.modele.Demande;
 import metier.modele.Eleve;
@@ -20,8 +21,20 @@ import static util.Message.envoyerMail;
  *
  * @author bvilleroy
  */
-public class ServiceAccueilEleve {
+public class ServiceInstructif {
     
+    /**
+     * Le service d'inscription d'un élève dans l'application. 
+     * 
+     * @param eleve L'élève à inscrire dans la base de données du site
+     * @param codeEtablissement Le code de l'établissement de l'élève
+     * @return True si l'inscription a eu lieu, False sinon
+     *
+     * @see EducNetApi#getInformationCollege(String)
+     * @see EducNetApi#getInformationLycee(String)
+     * @see EleveDao#ajouterEleve(Eleve)
+     * @see EtablissementDao#ajouterEtablissement(Etablissement)
+     */
     public boolean inscrireEleve(Eleve eleve, String codeEtablissement){
         
         EducNetApi ed= new EducNetApi();
@@ -31,6 +44,7 @@ public class ServiceAccueilEleve {
      
         boolean test = false;
         try {
+            
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
             
@@ -82,64 +96,110 @@ public class ServiceAccueilEleve {
         return test;
     }
     
+
+    /**
+     * Le service d'authentification d'un élève dans l'application. 
+     * 
+     * @param motDePasse    le mot de passe à tester
+     * @param mail          le mail à tester
+     * 
+     * @return Si l'authentification a eu lieu l'élève correspondant, null sinon
+
+     */
     public Eleve authentifierEleve(String motDePasse, String mail){
          
          Eleve insc = null;
          
          JpaUtil.creerContextePersistance();
          
-         Eleve c0 = EleveDao.obtenirEleveParEmail(mail);
+         insc = EleveDao.obtenirEleveParEmail(mail);
          
          JpaUtil.fermerContextePersistance();
          
-         if (c0 != null && c0.getMotDePasse().equals(motDePasse))
+         if (insc != null && insc.getMotDePasse().equals(motDePasse))
          {
-             insc = c0;
-             //trace
+            //On initialise la liste des demandes de l'élève avec ses demandes en mémoire 
+            insc.setDemandes(DemandeDao.obtenirDemandesParEleve(insc));
+             
+            //trace
              System.out.println("connexion reussie");
          }
          
          return insc;      
      }
     
-    //Initialisation
+    /**
+     * Le service de récupération des demandes d'un élève 
+     * 
+     * @param e         L'élève dont il faut récupérer les demandes
+     * 
+     * @return          La liste des demandes (si elle n'est pas vide), null sinon
+
+     */
     public List<Demande> consulterListeDemandesEleve(Eleve e){
-        
-        JpaUtil.creerContextePersistance();
-         
-         List<Demande> liste_d = DemandeDao.obtenirDemandesParEleve(e);
-         
-         JpaUtil.fermerContextePersistance();
-         
-        return liste_d;
-        
+    
+        return e.getDemandes();
+
     }
     
+    /**
+     * Le service de récupération des détails d'une demande
+     * 
+     * @param idDemande         L'id de la demande à récupérer
+     * 
+     * @return                  La demande
+
+     */
     public Demande consulterDetailDemande (Long idDemande) {
         
-        return DemandeDao.obtenirDemandeParId(idDemande);
+        Demande d=null;
+        
+        try {
+            JpaUtil.creerContextePersistance();
+         
+            d = DemandeDao.obtenirDemandeParId(idDemande);
+            
+            JpaUtil.fermerContextePersistance();
+        } catch (Exception e) {
+            d=null;
+        }
+        
+        return d;
     }
     
     //Acceuil - Elève
     
+    /**
+     * Crée une demande associée à un élève dans la base de données
+     * 
+     * @param d     La demande à inscrire dans la base de données
+     * @return      True si la création a eu lieu, False sinon. 
+     */
     public boolean creerDemande(Demande d){
      
         boolean test = false;
+
         try {
+
+            //Transaction
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
             
+            //Ajout de la demande à la liste de demandes de l'élève
             d.getEleve().ajouterDemande(d);
             DemandeDao.ajouterDemande(d);
-            
+
             JpaUtil.validerTransaction(); 
 
+            //Succès lors de la création
             test = true;
             
            System.out.println("Trace : succès creation demande " + d);
         }
-        catch (Exception ex) { // ça n'a pas marché
-                 JpaUtil.annulerTransaction(); // ne pas oublier d'annuler la transaction !
+        catch (Exception ex) {
+                
+                //Annulation de la transaction
+                 JpaUtil.annulerTransaction();
                 
                 System.out.println("Trace : échec demande " + d);
         }

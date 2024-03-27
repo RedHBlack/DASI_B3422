@@ -6,7 +6,6 @@
 package dao;
 
 import metier.modele.*;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.TypedQuery;
 

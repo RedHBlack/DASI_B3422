@@ -36,7 +36,7 @@ public class EtablissementDao {
         String jpql = "select e from Etablissement e where e.code = :unCode";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Etablissement.class);
         query.setParameter("unCode", code);
-       Etablissement e = null;
+        Etablissement e = null;
         try{
              e = (Etablissement)(query.getSingleResult());
              e = JpaUtil.obtenirContextePersistance().find(Etablissement.class, e.getId());

@@ -5,7 +5,6 @@
  */
 package metier.modele;
 
-import com.google.maps.model.LatLng;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
