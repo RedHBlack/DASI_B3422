@@ -38,11 +38,11 @@ public class Main{
             service.inscrireEleve(eleve, "0691664J");
             service.inscrireEleve(e2, "0691664N");
             eleve = service.authentifierEleve("motDePasse", "billy.villeroy@insa-lyon.fr");
-            Demande d1 = new Demande(eleve, new Date (2024, 02, 22), 33, "ceci est une description 1 de demande", "ceci est une autoevaluation 1", "ceci est un bilan 1", ACCEPTEE );
-            Demande d2 = new Demande(eleve, new Date (2028, 02, 22), 33, "ceci est une description 2 de demande", "ceci est une autoevaluation 2", "ceci est un bilan 1", ANNULEE );
+            Demande d1 = new Demande("ceci est une description 1 de demande");
+            Demande d2 = new Demande("ceci est une description 2 de demande");
         
-            service.creerDemande(d2);
-            service.creerDemande(d1);
+            service.creerDemande(d2,eleve);
+            service.creerDemande(d1,e2);
             
             //System.out.println(eleve.getId());
             

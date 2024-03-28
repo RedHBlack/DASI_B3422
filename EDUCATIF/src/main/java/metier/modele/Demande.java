@@ -52,14 +52,8 @@ public class Demande {
     public Demande() {
     }
 
-    public Demande(Eleve e, Date date, int duree, String description, String autoevaluation, String bilan, Etat statut) {
-        this.date = date;
-        this.duree = duree;
+    public Demande(String description) {
         this.description = description;
-        this.autoevaluation = autoevaluation;
-        this.bilan = bilan;
-        this.statut = statut;
-        this.eleve = e;
     }
 
     public Long getId() {

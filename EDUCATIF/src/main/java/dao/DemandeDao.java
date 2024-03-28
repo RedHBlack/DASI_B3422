@@ -34,6 +34,15 @@ public class DemandeDao {
         return JpaUtil.obtenirContextePersistance().find(Demande.class, id);
     }
     
+
+    public static Demande obtenirDernièreDemandeParEleve(Eleve e){
+        String jpql = "select d from Demande d where d.eleve = :unEleve order by d.date asc";
+        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Demande.class);
+        query.setParameter("unEleve", e);
+        
+        return (Demande)query.getResultList().get(0);
+    }
+
     public static List<Demande> obtenirDemandesParEleve(Eleve e){
         String jpql = "select d from Demande d where d.eleve = :unEleve";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(jpql, Demande.class);

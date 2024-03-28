@@ -10,11 +10,14 @@ import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.JpaUtil;
 
+import java.util.Date;
 import java.util.List;
 import metier.modele.Demande;
 import metier.modele.Eleve;
 import metier.modele.Etablissement;
 import util.EducNetApi;
+
+import static metier.modele.Demande.Etat.ACCEPTEE;
 import static util.Message.envoyerMail;
 
 /**
@@ -173,9 +176,10 @@ public class ServiceInstructif {
      * Crée une demande associée à un élève dans la base de données
      * 
      * @param d     La demande à inscrire dans la base de données
+     * @param e     L'élève à qui la demande doit être attribuée
      * @return      True si la création a eu lieu, False sinon. 
      */
-    public boolean creerDemande(Demande d){
+    public boolean creerDemande(Demande d, Eleve e){
      
         boolean test = false;
 
@@ -185,10 +189,25 @@ public class ServiceInstructif {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
             
-            //Ajout de la demande à la liste de demandes de l'élève
-            d.getEleve().ajouterDemande(d);
+            //Initialisation de l'élève de la demande
+            d.setEleve(e);
+
+            //Statut de la demande
+            d.setStatut(ACCEPTEE);
+
+            //Date actuelle
+            d.setDate(new Date());
+
+            //Ajout de la demande dans la BDD
             DemandeDao.ajouterDemande(d);
 
+            //Récupération de la demande avec l'id initialisé
+            d = DemandeDao.obtenirDernièreDemandeParEleve(e);
+
+            //Ajout de la demande dans la liste de l'élève
+            e.ajouterDemande(d);
+
+            //Validation de la transaction
             JpaUtil.validerTransaction(); 
 
             //Succès lors de la création
@@ -199,8 +218,7 @@ public class ServiceInstructif {
         catch (Exception ex) {
                 
                 //Annulation de la transaction
-                 JpaUtil.annulerTransaction();
-                
+                JpaUtil.annulerTransaction();
                 System.out.println("Trace : échec demande " + d);
         }
         finally { // dans tous les cas, on ferme l'entity manager
