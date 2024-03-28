@@ -84,6 +84,17 @@ public class Eleve extends Personne{
         if(d.getEleve()!=this)
             d.setEleve(this);
     }
+
+    @Override
+    public String toString() {
+        String s="Eleve{" +"id="+id+", dateNaissance=" + dateNaissance + ", classe=" + classe + ", etablissement=" + etablissement.getId() + ", demandes={";
+        for(Demande demande : demandes){
+            s +=' '+demande.toString();
+        }
+        s+="}}";
+        return s;
+        
+    }
     
     
 }

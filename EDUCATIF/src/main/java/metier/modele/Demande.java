@@ -127,7 +127,6 @@ public class Demande {
 
     @Override
     public String toString() {
-        return "Demande{" + "id=" + id + ", Eleve=" + eleve + ", intervenant=" + intervenant + ", bilan=" + bilan + ", autoevaluation=" + autoevaluation + ", statut=" + statut + "desciption=" + description + ", duree=" + duree + ", date=" + date + '}';
-
-        } 
+        return "Demande{" + "id=" + id + ", Eleve=" + eleve.getId() + ", intervenant=" + intervenant + ", bilan=" + bilan + ", autoevaluation=" + autoevaluation + ", statut=" + statut + ", description=" + description + ", duree=" + duree + ", date=" + date + '}';
+    } 
 }

@@ -18,6 +18,7 @@ import metier.modele.Etablissement;
 import util.EducNetApi;
 
 import static metier.modele.Demande.Etat.ACCEPTEE;
+import metier.modele.Intervenant;
 import static util.Message.envoyerMail;
 
 /**
@@ -51,31 +52,23 @@ public class ServiceInstructif {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
             
-            System.out.println("Trace : debut " );
             if(niveau > 2) {
                 infoEtab = ed.getInformationCollege(codeEtablissement);
-                System.out.println("Trace : if niveau >2 " );
             }
             else {
                 infoEtab = ed.getInformationLycee(codeEtablissement);
-                System.out.println("Trace : else niveau >2 " );
             }
             
             etab = EtablissementDao.obtenirEtablissementParCode(codeEtablissement);
-            System.out.println("Trace : avant if etab " + etab );
             
-            // si l'élève n'existe pas, on l'ajoute
+            // si l'établissement n'existe pas, on l'ajoute
             if(etab == null){
-                System.out.println("Trace : dans if etab " );
                 etab = new Etablissement(infoEtab.get(0),infoEtab.get(1),infoEtab.get(2),Integer.parseInt(infoEtab.get(3)),infoEtab.get(4),Integer.parseInt(infoEtab.get(5)),infoEtab.get(6),infoEtab.get(7),Double.parseDouble(infoEtab.get(8)));
 
                 EtablissementDao.ajouterEtablissement(etab); //retourne un bool
                 etab = EtablissementDao.obtenirEtablissementParCode(codeEtablissement); //retourne un etab
-                System.out.println("Trace : fin if etab " + etab);
             }
-            
-            System.out.println("Trace : après if etab " );
-            
+                        
             eleve.setEtablissement(etab);
             EleveDao.ajouterEleve(eleve);
             JpaUtil.validerTransaction(); 
@@ -88,7 +81,6 @@ public class ServiceInstructif {
                  JpaUtil.annulerTransaction(); // ne pas oublier d'annuler la transaction !
                 // todo : envoyer le mail d'infirmation
                 // on pourrait aussi lancer une exception
-                System.out.println("Trace : salut " + eleve);
                 envoyerMail("moi", eleve.getEmail(), "inscription", "problème");
                 test = false;
         }
@@ -109,24 +101,30 @@ public class ServiceInstructif {
      * @return Si l'authentification a eu lieu l'élève correspondant, null sinon
 
      */
-    public Eleve authentifierEleve(String motDePasse, String mail){
+    public Eleve authentifierEleve(String mail,String motDePasse){
          
          Eleve insc = null;
          
-         JpaUtil.creerContextePersistance();
-         
-         insc = EleveDao.obtenirEleveParEmail(mail);
-         
-         JpaUtil.fermerContextePersistance();
-         
-         if (insc != null && insc.getMotDePasse().equals(motDePasse))
-         {
-            //On initialise la liste des demandes de l'élève avec ses demandes en mémoire 
-            insc.setDemandes(DemandeDao.obtenirDemandesParEleve(insc));
-             
-            //trace
-             System.out.println("connexion reussie");
+         try{
+            JpaUtil.creerContextePersistance();
+
+            insc = EleveDao.obtenirEleveParEmail(mail);
+            
+            if (insc.getMotDePasse().equals(motDePasse))
+            {
+               //On initialise la liste des demandes de l'élève avec ses demandes en mémoire 
+               insc.setDemandes(DemandeDao.obtenirDemandesParEleve(insc));
+               insc.getEtablissement().setEleves(EleveDao.obtenirElevesParEtablissement(insc.getEtablissement()));
+
+               //trace
+                System.out.println("connexion reussie");
+            }
+         }catch(Exception e){
+             insc=null;
+         }finally{
+             JpaUtil.fermerContextePersistance();
          }
+         
          
          return insc;      
      }
@@ -162,9 +160,10 @@ public class ServiceInstructif {
          
             d = DemandeDao.obtenirDemandeParId(idDemande);
             
-            JpaUtil.fermerContextePersistance();
         } catch (Exception e) {
             d=null;
+        }finally{
+            JpaUtil.fermerContextePersistance();
         }
         
         return d;
@@ -200,13 +199,10 @@ public class ServiceInstructif {
 
             //Ajout de la demande dans la BDD
             DemandeDao.ajouterDemande(d);
-
             //Récupération de la demande avec l'id initialisé
-            d = DemandeDao.obtenirDernièreDemandeParEleve(e);
-
+            d = DemandeDao.obtenirDerniereDemandeParEleve(e);
             //Ajout de la demande dans la liste de l'élève
             e.ajouterDemande(d);
-
             //Validation de la transaction
             JpaUtil.validerTransaction(); 
 
@@ -216,6 +212,7 @@ public class ServiceInstructif {
            System.out.println("Trace : succès creation demande " + d);
         }
         catch (Exception ex) {
+                
                 
                 //Annulation de la transaction
                 JpaUtil.annulerTransaction();
@@ -227,4 +224,74 @@ public class ServiceInstructif {
         
         return test;
     }
+    
+    public Eleve ouvrirProfil(Long idEleve){
+        
+        Eleve eleve=null;
+        
+        try{
+            JpaUtil.creerContextePersistance();
+            eleve = EleveDao.obtenirEleveParId(idEleve);
+        }catch(Exception ex){
+            eleve=null;
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        return eleve;
+    }
+    
+    public List<Etablissement> consulterListeEtablissements(){
+        List<Etablissement> etablissements=null;
+        
+        try{
+            JpaUtil.creerContextePersistance();
+            etablissements = EtablissementDao.obtenirTousEtablissements();
+        }catch(Exception ex){
+            etablissements=null;
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        return etablissements;
+    }
+    
+    public Etablissement consulterDetailEtablissement(Long idEtablissement){
+        
+        Etablissement etablissement=null;
+        
+        try{
+            JpaUtil.creerContextePersistance();
+            etablissement = EtablissementDao.obtenirEtablissementParId(idEtablissement);
+        }catch(Exception ex){
+            etablissement=null;
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        return etablissement;
+    }
+    
+     public List<Demande> consulterListeInterventionsIntervenant(Intervenant i){
+    
+        return i.getInterventions();
+
+    }
+     
+     public Demande verifierDemandeActuelle(Intervenant i){
+         Demande d;
+         try{
+            JpaUtil.creerContextePersistance();
+            d = DemandeDao.obtenirDerniereInterventionParIntervenant(i);
+            if(d.getBilan()!=null)
+                d=null;            
+         }catch(Exception e){
+             d=null;
+         }finally{
+             JpaUtil.fermerContextePersistance();
+         }
+         
+         return d;
+     }
+
 }

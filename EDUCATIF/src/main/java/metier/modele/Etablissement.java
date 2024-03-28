@@ -191,5 +191,17 @@ public class Etablissement {
         eleves.remove(e);
         e.setEtablissement(null);
     }
+
+    @Override
+    public String toString() {
+        String s="Etablissement{" + "id=" + id + ", code=" + code + ", nom=" + nom + ", secteur=" + secteur + ", codePostal=" + codePostal + ", nomCommune=" + nomCommune + ", codeDepartement=" + codeDepartement + ", departement=" + departement + ", academie=" + academie + ", ips=" + ips + ", longitude=" + longitude + ", latitude=" + latitude+", eleves={";
+        for(Eleve e : eleves){
+            s +=' '+e.toString();
+        }
+        s+="}}";
+        return s;
+    }
+    
+    
     
 }
